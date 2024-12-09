@@ -1,3 +1,4 @@
+import DetailPage from './pages/detail.js'
 import HomePage from './pages/home.js'
 import { loading } from './utilities.js'
 
@@ -25,9 +26,14 @@ navItems.addEventListener('click', (event) => {
     }
 })
 
-async function openHomePage() {
+export async function openHomePage() {
     loading()
     await HomePage()
+}
+
+export async function openDetailPage(cocktailId) {
+    loading()
+    await DetailPage(cocktailId)
 }
 
 openHomePage()

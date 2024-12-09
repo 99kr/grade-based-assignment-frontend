@@ -1,4 +1,5 @@
-import { loading, mapRawCocktailData } from '../utilities.js'
+import { openDetailPage, openHomePage } from '../index.js'
+import { mapRawCocktailData } from '../utilities.js'
 
 const mainElement = document.querySelector('main')
 
@@ -17,14 +18,9 @@ export default async function HomePage() {
 
     mainElement.innerHTML = html
 
-    mainElement.querySelector('#refresh').addEventListener('click', () => {
-        loading()
-        HomePage()
-    })
-
+    mainElement.querySelector('#refresh').addEventListener('click', openHomePage)
     mainElement.querySelector('#see-more').addEventListener('click', () => {
-        loading()
-        // TODO
+        openDetailPage(randomCocktail.id)
     })
 }
 
