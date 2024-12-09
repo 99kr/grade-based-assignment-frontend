@@ -16,4 +16,22 @@
     .btn-primary:hover {
         @apply bg-orange-600 border-orange-600;
     }
+
+    .pagination-button {
+        @apply border-2 border-zinc-700 text-zinc-200 size-8 rounded-md flex justify-center items-center;
+    }
+    .pagination-button:disabled {
+        @apply text-zinc-700 cursor-not-allowed;
+    }
+    .pagination-button:hover {
+        @apply bg-zinc-700 text-zinc-100;
+    }
+}
+
+#pagination-pages button:disabled {
+    @apply border-orange-500 text-orange-500;
+}
+
+#pagination-pages button:disabled:hover {
+    @apply bg-orange-500 text-zinc-100;
 }

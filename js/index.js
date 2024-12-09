@@ -1,5 +1,6 @@
 import DetailPage from './pages/detail.js'
 import HomePage from './pages/home.js'
+import SearchPage from './pages/search.js'
 import { loading } from './utilities.js'
 
 globalThis.BASE_URL = 'https://www.thecocktaildb.com/api/json/v1/1'
@@ -21,8 +22,7 @@ navItems.addEventListener('click', (event) => {
     if (page === 'home') {
         openHomePage()
     } else if (page === 'search') {
-        // TODO
-        //openSearchPage()
+        openSearchPage()
     }
 })
 
@@ -34,6 +34,10 @@ export async function openHomePage() {
 export async function openDetailPage(cocktailId) {
     loading()
     await DetailPage(cocktailId)
+}
+
+export function openSearchPage() {
+    SearchPage()
 }
 
 openHomePage()

@@ -25,10 +25,14 @@ export function mapRawCocktailData(rawCocktial) {
     }
 }
 
-const mainElement = document.querySelector('main')
-export function loading() {
-    mainElement.innerHTML = `
+export function createLoader() {
+    return `
     <div class="flex justify-center items-center h-full">
         <span class="material-symbols-rounded animate-spin text-6xl text-zinc-300">progress_activity</span>
     </div>`
+}
+
+const mainElement = document.querySelector('main')
+export function loading() {
+    mainElement.innerHTML = createLoader()
 }
