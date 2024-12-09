@@ -13,9 +13,11 @@
     <body class="bg-zinc-900 text-zinc-50 flex flex-col h-screen">
         <nav class="bg-zinc-950 py-2 flex justify-center">
             <ul class="flex gap-4 items-center text-lg container">
-                <li><img src="logo.png" alt="Logo" /></li>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Search</a></li>
+                <li class="cursor-pointer" data-opens="home">
+                    <img src="logo.png" alt="Logo" />
+                </li>
+                <li class="cursor-pointer hover:text-orange-400" data-opens="home">Home</li>
+                <li class="cursor-pointer hover:text-orange-400" data-opens="search">Search</li>
             </ul>
         </nav>
 
