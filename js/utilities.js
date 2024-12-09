@@ -24,3 +24,11 @@ export function mapRawCocktailData(rawCocktial) {
             .filter((item) => item.ingredient),
     }
 }
+
+const mainElement = document.querySelector('main')
+export function loading() {
+    mainElement.innerHTML = `
+    <div class="flex justify-center items-center h-full">
+        <span class="material-symbols-rounded animate-spin text-6xl text-zinc-300">progress_activity</span>
+    </div>`
+}
