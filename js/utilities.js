@@ -36,3 +36,32 @@ const mainElement = document.querySelector('main')
 export function loading() {
     mainElement.innerHTML = createLoader()
 }
+
+/**
+ * @returns {{id: string, name: string, thumbnail: string}[]}
+ */
+export function getAllFavorites() {
+    return JSON.parse(localStorage.getItem('favorites')) ?? []
+}
+
+export function addFavorite(cocktail) {
+    const favorites = getAllFavorites()
+    favorites.push({ id: cocktail.id, name: cocktail.name, thumbnail: cocktail.thumbnail })
+    localStorage.setItem('favorites', JSON.stringify(favorites))
+}
+
+export function removeFavorite(id) {
+    const favorites = getAllFavorites()
+    const index = favorites.findIndex((item) => item.id === id)
+    if (index === -1) return
+
+    favorites.splice(index, 1)
+    localStorage.setItem('favorites', JSON.stringify(favorites))
+}
+
+export function isFavorite(id) {
+    const favorites = getAllFavorites()
+    const index = favorites.findIndex((item) => item.id === id)
+
+    return index !== -1
+}

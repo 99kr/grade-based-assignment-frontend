@@ -1,9 +1,10 @@
-import { mapRawCocktailData } from '../utilities.js'
+import { addFavorite, isFavorite, mapRawCocktailData, removeFavorite } from '../utilities.js'
 
 const mainElement = document.querySelector('main')
 
 export default async function DetailPage(cocktailId) {
     const cocktail = await getCocktailFromId(cocktailId)
+    let favorited = isFavorite(cocktailId)
     const instructions = cocktail.instructions.split('.')
     // remove last instruction (empty string)
     instructions.splice(-1, 1)
@@ -13,7 +14,12 @@ export default async function DetailPage(cocktailId) {
         <div class="flex flex-col gap-8">
             <div>
                 <p class="text-zinc-400">${cocktail.category}</p>
-                <h1 class="text-4xl">${cocktail.name}</h1>
+                <div class="flex justify-between w-full">
+                    <h1 class="text-4xl">${cocktail.name}</h1>
+                    <button id="favorite-btn" class="btn px-2 py-0 ${favorited ? 'btn-primary' : ''}">
+                        <span class="material-symbols-rounded text-xl">star</span>
+                    </button>
+                </div>
             </div>
 
             <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-96 rounded-md" />
@@ -41,6 +47,19 @@ export default async function DetailPage(cocktailId) {
     </div>`
 
     mainElement.innerHTML = html
+
+    const favoriteButton = mainElement.querySelector('#favorite-btn')
+    favoriteButton.onclick = () => {
+        if (favorited) {
+            favorited = false
+            removeFavorite(cocktailId)
+            favoriteButton.classList.remove('btn-primary')
+        } else {
+            favorited = true
+            addFavorite(cocktail)
+            favoriteButton.classList.add('btn-primary')
+        }
+    }
 }
 
 function createTag(text) {

@@ -17,6 +17,13 @@
         @apply bg-orange-600 border-orange-600;
     }
 
+    .btn-danger {
+        @apply btn border-red-500;
+    }
+    .btn-danger:hover {
+        @apply bg-red-600 border-red-600;
+    }
+
     .pagination-button {
         @apply border-2 border-zinc-700 text-zinc-200 size-8 rounded-md flex justify-center items-center;
     }

@@ -1,5 +1,5 @@
 import { openDetailPage } from '../index.js'
-import { createLoader, mapRawCocktailData } from '../utilities.js'
+import { addFavorite, createLoader, isFavorite, mapRawCocktailData, removeFavorite } from '../utilities.js'
 
 const mainElement = document.querySelector('main')
 let foundResults = []
@@ -59,6 +59,24 @@ export default function SearchPage() {
     })
 
     searchResultsElement.addEventListener('click', (event) => {
+        if (event.target.tagName === 'BUTTON' && event.target.dataset.favorited !== null) {
+            const favorited = event.target.dataset.favorited === 'true'
+            const id = event.target.dataset.id
+            const cocktail = getFoundCocktailFromId(id)
+            if (!cocktail) return
+
+            if (favorited) {
+                event.target.dataset.favorited = 'false'
+                event.target.classList.remove('btn-primary')
+                removeFavorite(id)
+            } else {
+                event.target.dataset.favorited = 'true'
+                event.target.classList.add('btn-primary')
+                addFavorite(cocktail)
+            }
+            return
+        }
+
         if (event.target.tagName !== 'LI') return
         if (!event.target.dataset.id) return
 
@@ -117,12 +135,26 @@ function createPaginationPages() {
 }
 
 function createSearchResult(cocktail) {
+    let favorited = isFavorite(cocktail.id)
+
     return `
-    <li class="flex gap-4 items-center hover:bg-zinc-700 rounded-md p-2 cursor-pointer" data-id="${cocktail.id}">
-        <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-10 rounded-md pointer-events-none" />
-        <p class="text-lg pointer-events-none">${cocktail.name}</p>
+    <li class="flex justify-between hover:bg-zinc-700 rounded-md p-2 cursor-pointer" data-id="${cocktail.id}">
+        <div class="flex items-center gap-4 pointer-events-none">
+            <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-10 rounded-md pointer-events-none" />
+            <p class="text-lg pointer-events-none">${cocktail.name}</p>
+        </div>
+
+        <button class="btn favorite-btn px-2 py-0 justify-self-end ${
+            favorited ? 'btn-primary' : ''
+        }" data-favorited="${favorited}" data-id="${cocktail.id}">
+            <span class="material-symbols-rounded text-xl pointer-events-none">star</span>
+        </button>
     </li>
     `
+}
+
+function getFoundCocktailFromId(cocktailId) {
+    return foundResults.find((cocktail) => cocktail.id === cocktailId)
 }
 
 async function getSearchResults(searchTerm) {
@@ -168,7 +200,6 @@ async function getSearchResults(searchTerm) {
 
         if (Array.isArray(glassResults.drinks)) {
             for (const cocktail of glassResults.drinks) {
-                console.log(cocktail)
                 results.push(mapRawCocktailData(cocktail))
             }
         }

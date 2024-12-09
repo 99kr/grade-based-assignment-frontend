@@ -1,4 +1,5 @@
 import DetailPage from './pages/detail.js'
+import FavoritesPage from './pages/favorites.js'
 import HomePage from './pages/home.js'
 import SearchPage from './pages/search.js'
 import { loading } from './utilities.js'
@@ -17,12 +18,14 @@ navItems.addEventListener('click', (event) => {
 
     // only allow (home, search) pages to be opened
     const page = target.dataset.opens
-    if (!page || !['home', 'search'].includes(page)) return
+    if (!page || !['home', 'search', 'favorites'].includes(page)) return
 
     if (page === 'home') {
         openHomePage()
     } else if (page === 'search') {
         openSearchPage()
+    } else if (page === 'favorites') {
+        openFavoritesPage()
     }
 })
 
@@ -38,6 +41,10 @@ export async function openDetailPage(cocktailId) {
 
 export function openSearchPage() {
     SearchPage()
+}
+
+export function openFavoritesPage() {
+    FavoritesPage()
 }
 
 openHomePage()
