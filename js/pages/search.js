@@ -25,7 +25,7 @@ export default function SearchPage() {
                     <span class="material-symbols-rounded">chevron_left</span>
                 </button>
 
-                <div id="pagination-pages" class="flex gap-2"></div>
+                <div id="pagination-numbers" class="flex gap-2"></div>
 
                 <button id="pagination-forward" class="pagination-button" disabled>
                     <span class="material-symbols-rounded">chevron_right</span>
@@ -95,12 +95,12 @@ function paginatedSearchResults() {
 
     searchResultsElement.innerHTML = foundResults.slice(startIdx, endIdx).map(createSearchResult).join('')
 
-    const paginationPages = mainElement.querySelector('#pagination-pages')
-    paginationPages.innerHTML = createPaginationPages()
+    const paginationNumbers = mainElement.querySelector('#pagination-numbers')
+    paginationNumbers.innerHTML = PaginationNumbers()
 
     const paginationBack = mainElement.querySelector('#pagination-back')
     const paginationForward = mainElement.querySelector('#pagination-forward')
-    const currentPageButton = paginationPages.querySelector(`[data-page="${currentPage}"]`)
+    const currentPageButton = paginationNumbers.querySelector(`[data-page="${currentPage}"]`)
 
     paginationBack.disabled = currentPage === 0
     paginationForward.disabled = currentPage === maxPages - 1
@@ -116,7 +116,7 @@ function paginatedSearchResults() {
         paginatedSearchResults()
     }
 
-    paginationPages.onclick = (event) => {
+    paginationNumbers.onclick = (event) => {
         if (event.target.tagName !== 'BUTTON') return
         currentPage = Number(event.target.dataset.page)
         paginatedSearchResults()
@@ -129,7 +129,7 @@ function paginatedSearchResults() {
     resultsCountElement.innerHTML = `Showing ${startIdx + 1}-${endIdx} of ${foundResults.length} results`
 }
 
-function createPaginationPages() {
+function PaginationNumbers() {
     return Array.from({ length: maxPages })
         .map((_, i) => html`<button class="pagination-button" data-page="${i}">${i + 1}</button>`)
         .join('')

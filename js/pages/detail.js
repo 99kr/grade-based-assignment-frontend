@@ -7,7 +7,7 @@ export default async function DetailPage(cocktailId) {
     let favorited = isFavorite(cocktailId)
     const instructions = cocktail.instructions.split('.')
     // remove last instruction (empty string)
-    instructions.splice(-1, 1)
+    instructions.pop()
 
     const detailPage = html`
         <div class="flex gap-16">
@@ -25,7 +25,7 @@ export default async function DetailPage(cocktailId) {
                 <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-96 rounded-md" />
 
                 <ul class="flex flex-wrap gap-2 max-w-96">
-                    ${cocktail.tags.map(createTag).join('')}
+                    ${cocktail.tags.map(Tag).join('')}
                 </ul>
             </div>
 
@@ -33,16 +33,20 @@ export default async function DetailPage(cocktailId) {
                 <div class="flex flex-col gap-2">
                     <h2 class="text-2xl">Ingredients</h2>
                     <ul class="flex flex-col gap-2 list-disc list-inside">
-                        ${cocktail.ingredients.map(createIngredient).join('')}
+                        ${cocktail.ingredients.map(Ingredient).join('')}
                     </ul>
                 </div>
 
                 <div class="flex flex-col gap-2">
                     <h2 class="text-2xl">Instructions</h2>
                     <ul class="flex flex-col gap-2 list-disc list-inside">
-                        ${instructions.map(createInstruction).join('')}
-                        ${createInstruction('Served with: ' + cocktail.glass)}
+                        ${instructions.map(Instruction).join('')}
                     </ul>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-2xl">Served with</h2>
+                    <p class="text-zinc-200">${cocktail.glass}</p>
                 </div>
             </div>
         </div>
@@ -64,23 +68,27 @@ export default async function DetailPage(cocktailId) {
     }
 }
 
-function createTag(text) {
-    return `<li class="bg-zinc-600 text-zinc-100 px-4 rounded-full text-sm">${text}</li>`
+function Tag(text) {
+    return html`<li class="bg-zinc-600 text-zinc-100 px-4 rounded-full text-sm">${text}</li>`
 }
 
-function createIngredient(ingredient) {
-    return `
-    <li class="text-zinc-200 pl-2">
-        ${ingredient.ingredient}
-        ${ingredient.measure ? `(${ingredient.measure.trimEnd()})` : ''}
-    </li>`
+function Ingredient(ingredient) {
+    return html`
+        <li class="text-zinc-200 pl-2">
+            ${ingredient.ingredient} ${ingredient.measure ? `(${ingredient.measure.trimEnd()})` : ''}
+        </li>
+    `
 }
 
-function createInstruction(instruction) {
-    return `<li class="text-zinc-200 pl-2">${instruction}</li>`
+function Instruction(instruction) {
+    return html`<li class="text-zinc-200 pl-2">${instruction}</li>`
 }
 
 async function getCocktailFromId(cocktailId) {
-    const cocktail = await fetch(BASE_URL + `/lookup.php?i=${cocktailId}`).then((response) => response.json())
-    return mapRawCocktailData(cocktail.drinks[0])
+    try {
+        const cocktail = await fetch(BASE_URL + `/lookup.php?i=${cocktailId}`).then((response) => response.json())
+        return mapRawCocktailData(cocktail.drinks[0])
+    } catch {
+        mainElement.innerHTML = html`<p class="text-zinc-400">Cocktail not found</p>`
+    }
 }

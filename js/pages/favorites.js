@@ -4,11 +4,16 @@ import { getAllFavorites, removeFavorite } from '../utilities.js'
 export default function FavoritesPage() {
     const favorites = getAllFavorites()
 
+    if (favorites.length === 0) {
+        mainElement.innerHTML = html`<p class="text-zinc-400">You have no favorites yet. Add some!</p>`
+        return
+    }
+
     const favoritesPage = html`
         <div class="flex flex-col gap-4">
             <h1 class="text-2xl">Favorites</h1>
             <ul id="favorites" class="flex flex-col gap-2">
-                ${favorites.map(createFavorite).join('')}
+                ${favorites.map(Favorite).join('')}
             </ul>
         </div>
     `
@@ -16,24 +21,24 @@ export default function FavoritesPage() {
     mainElement.innerHTML = favoritesPage
 
     const favoritesElement = mainElement.querySelector('#favorites')
-    favoritesElement.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
-            if (!event.target.dataset.id) return
-            const id = event.target.dataset.id
+    favoritesElement.addEventListener('click', ({ target }) => {
+        if (target.tagName === 'BUTTON') {
+            if (!target.dataset.id) return
+            const id = target.dataset.id
             removeFavorite(id)
 
-            favoritesElement.removeChild(event.target.parentElement)
+            favoritesElement.removeChild(target.parentElement)
             return
         }
 
-        if (event.target.tagName !== 'LI') return
-        if (!event.target.dataset.id) return
+        if (target.tagName !== 'LI') return
+        if (!target.dataset.id) return
 
-        openDetailPage(event.target.dataset.id)
+        openDetailPage(target.dataset.id)
     })
 }
 
-function createFavorite(cocktail) {
+function Favorite(cocktail) {
     return html`
         <li class="flex justify-between hover:bg-zinc-700 rounded-md p-2 cursor-pointer" data-id="${cocktail.id}">
             <div class="flex items-center gap-4 pointer-events-none">

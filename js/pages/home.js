@@ -41,6 +41,10 @@ export default async function HomePage() {
 }
 
 async function getRandomCocktail() {
-    const randomCocktail = await fetch(BASE_URL + '/random.php').then((response) => response.json())
-    return mapRawCocktailData(randomCocktail.drinks[0])
+    try {
+        const randomCocktail = await fetch(BASE_URL + '/random.php').then((response) => response.json())
+        return mapRawCocktailData(randomCocktail.drinks[0])
+    } catch {
+        mainElement.innerHTML = html`<p class="text-zinc-400">No random cocktail found. Try again later.</p>`
+    }
 }
