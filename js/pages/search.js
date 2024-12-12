@@ -157,53 +157,26 @@ function getFoundCocktailFromId(cocktailId) {
     return foundResults.find((cocktail) => cocktail.id === cocktailId)
 }
 
-async function getSearchResults(searchTerm) {
-    const results = []
-
-    // help D:
+// General function for searching cocktails API, since the API doesn't support a single request for all search types
+// and then mapping the results to a more usable format
+async function searchCocktailsAndMap(url) {
     try {
-        const nameResults = await fetch(BASE_URL + `/search.php?s=${searchTerm}`).then((response) => response.json())
+        const results = await fetch(BASE_URL + url).then((response) => response.json())
 
-        if (Array.isArray(nameResults.drinks)) {
-            for (const cocktail of nameResults.drinks) {
-                results.push(mapRawCocktailData(cocktail))
-            }
-        }
-    } catch {}
+        if (!results || !results.drinks || !Array.isArray(results.drinks)) return []
+        return results.drinks.map(mapRawCocktailData)
+    } catch {
+        return []
+    }
+}
 
-    try {
-        const ingredientResults = await fetch(BASE_URL + `/filter.php?i=${searchTerm}`).then((response) =>
-            response.json()
-        )
+async function getSearchResults(search) {
+    if (!search || search.trim().length === 0) return []
 
-        if (Array.isArray(ingredientResults.drinks)) {
-            for (const cocktail of ingredientResults.drinks) {
-                results.push(mapRawCocktailData(cocktail))
-            }
-        }
-    } catch {}
+    const nameResults = await searchCocktailsAndMap(`/search.php?s=${search}`)
+    const ingredientResults = await searchCocktailsAndMap(`/filter.php?i=${search}`)
+    const categoryResults = await searchCocktailsAndMap(`/filter.php?c=${search}`)
+    const glassResults = await searchCocktailsAndMap(`/filter.php?g=${search}`)
 
-    try {
-        const categoryResults = await fetch(BASE_URL + `/filter.php?c=${searchTerm}`).then((response) =>
-            response.json()
-        )
-
-        if (Array.isArray(categoryResults.drinks)) {
-            for (const cocktail of categoryResults.drinks) {
-                results.push(mapRawCocktailData(cocktail))
-            }
-        }
-    } catch {}
-
-    try {
-        const glassResults = await fetch(BASE_URL + `/filter.php?g=${searchTerm}`).then((response) => response.json())
-
-        if (Array.isArray(glassResults.drinks)) {
-            for (const cocktail of glassResults.drinks) {
-                results.push(mapRawCocktailData(cocktail))
-            }
-        }
-    } catch {}
-
-    return results
+    return [...nameResults, ...ingredientResults, ...categoryResults, ...glassResults]
 }
