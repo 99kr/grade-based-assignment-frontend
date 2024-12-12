@@ -1,7 +1,5 @@
 import { addFavorite, isFavorite, mapRawCocktailData, removeFavorite } from '../utilities.js'
 
-const html = String.raw
-
 export default async function DetailPage(cocktailId) {
     const cocktail = await getCocktailFromId(cocktailId)
     let favorited = isFavorite(cocktailId)
