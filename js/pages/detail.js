@@ -1,6 +1,6 @@
 import { addFavorite, isFavorite, mapRawCocktailData, removeFavorite } from '../utilities.js'
 
-const mainElement = document.querySelector('main')
+const html = String.raw
 
 export default async function DetailPage(cocktailId) {
     const cocktail = await getCocktailFromId(cocktailId)
@@ -9,44 +9,46 @@ export default async function DetailPage(cocktailId) {
     // remove last instruction (empty string)
     instructions.splice(-1, 1)
 
-    const html = `
-    <div class="flex gap-16">
-        <div class="flex flex-col gap-8">
-            <div>
-                <p class="text-zinc-400">${cocktail.category}</p>
-                <div class="flex justify-between w-full">
-                    <h1 class="text-4xl">${cocktail.name}</h1>
-                    <button id="favorite-btn" class="btn px-2 py-0 ${favorited ? 'btn-primary' : ''}">
-                        <span class="material-symbols-rounded text-xl">star</span>
-                    </button>
+    const detailPage = html`
+        <div class="flex gap-16">
+            <div class="flex flex-col gap-8">
+                <div>
+                    <p class="text-zinc-400">${cocktail.category}</p>
+                    <div class="flex justify-between w-full">
+                        <h1 class="text-4xl">${cocktail.name}</h1>
+                        <button id="favorite-btn" class="btn px-2 py-0 ${favorited ? 'btn-primary' : ''}">
+                            <span class="material-symbols-rounded text-xl">star</span>
+                        </button>
+                    </div>
+                </div>
+
+                <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-96 rounded-md" />
+
+                <ul class="flex flex-wrap gap-2 max-w-96">
+                    ${cocktail.tags.map(createTag).join('')}
+                </ul>
+            </div>
+
+            <div class="flex flex-col gap-8">
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-2xl">Ingredients</h2>
+                    <ul class="flex flex-col gap-2 list-disc list-inside">
+                        ${cocktail.ingredients.map(createIngredient).join('')}
+                    </ul>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-2xl">Instructions</h2>
+                    <ul class="flex flex-col gap-2 list-disc list-inside">
+                        ${instructions.map(createInstruction).join('')}
+                        ${createInstruction('Served with: ' + cocktail.glass)}
+                    </ul>
                 </div>
             </div>
-
-            <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-96 rounded-md" />
-
-            <ul class="flex flex-wrap gap-2 max-w-96">
-                ${cocktail.tags.map(createTag).join('')}
-            </ul>
         </div>
-        
-        <div class="flex flex-col gap-8">
-            <div class="flex flex-col gap-2">
-                <h2 class="text-2xl">Ingredients</h2>
-                <ul class="flex flex-col gap-2 list-disc list-inside">
-                    ${cocktail.ingredients.map(createIngredient).join('')}
-                </ul>
-            </div>
+    `
 
-            <div class="flex flex-col gap-2">
-                <h2 class="text-2xl">Instructions</h2>
-                <ul class="flex flex-col gap-2 list-disc list-inside">
-                    ${instructions.map(createInstruction).join('')}
-                    ${createInstruction('Served with: ' + cocktail.glass)}
-                </ul>
-        </div>
-    </div>`
-
-    mainElement.innerHTML = html
+    mainElement.innerHTML = detailPage
 
     const favoriteButton = mainElement.querySelector('#favorite-btn')
     favoriteButton.onclick = () => {

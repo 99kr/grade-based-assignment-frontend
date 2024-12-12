@@ -26,13 +26,13 @@ export function mapRawCocktailData(rawCocktial) {
 }
 
 export function createLoader() {
-    return `
-    <div class="flex justify-center items-center h-full">
-        <span class="material-symbols-rounded animate-spin text-6xl text-zinc-300">progress_activity</span>
-    </div>`
+    return html`
+        <div class="flex justify-center items-center h-full">
+            <span class="material-symbols-rounded animate-spin text-6xl text-zinc-300">progress_activity</span>
+        </div>
+    `
 }
 
-const mainElement = document.querySelector('main')
 export function loading() {
     mainElement.innerHTML = createLoader()
 }
@@ -61,7 +61,7 @@ export function removeFavorite(id) {
 
 export function isFavorite(id) {
     const favorites = getAllFavorites()
-    const index = favorites.findIndex((item) => item.id === id)
+    const isFavorited = favorites.some((item) => item.id === id)
 
-    return index !== -1
+    return isFavorited
 }

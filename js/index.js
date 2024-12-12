@@ -5,10 +5,11 @@ import SearchPage from './pages/search.js'
 import { loading } from './utilities.js'
 
 globalThis.BASE_URL = 'https://www.thecocktaildb.com/api/json/v1/1'
+globalThis.mainElement = document.querySelector('main')
+globalThis.html = String.raw
 
 const navItems = document.querySelector('nav ul')
-navItems.addEventListener('click', (event) => {
-    let target = event.target
+navItems.addEventListener('click', ({ target }) => {
     if (target.tagName !== 'LI') {
         if (target.tagName !== 'IMG') return
 
@@ -16,7 +17,7 @@ navItems.addEventListener('click', (event) => {
         target = target.parentElement
     }
 
-    // only allow (home, search) pages to be opened
+    // only allow (home, search, favorites) pages to be opened
     const page = target.dataset.opens
     if (!page || !['home', 'search', 'favorites'].includes(page)) return
 

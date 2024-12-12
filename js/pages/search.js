@@ -1,7 +1,6 @@
 import { openDetailPage } from '../index.js'
 import { addFavorite, createLoader, isFavorite, mapRawCocktailData, removeFavorite } from '../utilities.js'
 
-const mainElement = document.querySelector('main')
 let foundResults = []
 let currentPage = 0
 let maxPages = 0
@@ -12,31 +11,32 @@ export default function SearchPage() {
     currentPage = 0
     maxPages = 0
 
-    const html = `
-    <div class="flex flex-col gap-8">
-        <form id="search-form" class="w-full flex gap-2">
-            <input class="w-full py-2 bg-zinc-700 rounded-md px-4" type="text" placeholder="Search" />
-            <button class="btn-primary" type="submit">Search</button>
-        </form>
+    const searchPage = html`
+        <div class="flex flex-col gap-8">
+            <form id="search-form" class="w-full flex gap-2">
+                <input class="w-full py-2 bg-zinc-700 rounded-md px-4" type="text" placeholder="Search" />
+                <button class="btn-primary" type="submit">Search</button>
+            </form>
 
-        <ul class="flex flex-col gap-2" id="search-results"></ul>
+            <ul class="flex flex-col gap-2" id="search-results"></ul>
 
-        <div class="flex gap-2">
-            <button id="pagination-back" class="pagination-button" disabled>
-                <span class="material-symbols-rounded">chevron_left</span>
-            </button>
+            <div class="flex gap-2">
+                <button id="pagination-back" class="pagination-button" disabled>
+                    <span class="material-symbols-rounded">chevron_left</span>
+                </button>
 
-            <div id="pagination-pages" class="flex gap-2"></div>
+                <div id="pagination-pages" class="flex gap-2"></div>
 
-            <button id="pagination-forward" class="pagination-button" disabled>
-                <span class="material-symbols-rounded">chevron_right</span>
-            </button>
+                <button id="pagination-forward" class="pagination-button" disabled>
+                    <span class="material-symbols-rounded">chevron_right</span>
+                </button>
+            </div>
+
+            <p id="results-count">Showing 1-10 of ${foundResults.length} results</p>
         </div>
+    `
 
-        <p id="results-count">Showing 1-10 of ${foundResults.length} results</p>
-    </div>`
-
-    mainElement.innerHTML = html
+    mainElement.innerHTML = searchPage
 
     const input = mainElement.querySelector('#search-form input')
     input.focus()
@@ -58,29 +58,30 @@ export default function SearchPage() {
         paginatedSearchResults()
     })
 
-    searchResultsElement.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON' && event.target.dataset.favorited !== null) {
-            const favorited = event.target.dataset.favorited === 'true'
-            const id = event.target.dataset.id
+    searchResultsElement.addEventListener('click', ({ target }) => {
+        if (!target.dataset.id) return
+        const id = target.dataset.id
+
+        if (target.tagName === 'BUTTON' && target.dataset.favorited !== null) {
+            const favorited = target.dataset.favorited === 'true'
             const cocktail = getFoundCocktailFromId(id)
             if (!cocktail) return
 
             if (favorited) {
-                event.target.dataset.favorited = 'false'
-                event.target.classList.remove('btn-primary')
+                target.dataset.favorited = 'false'
+                target.classList.remove('btn-primary')
                 removeFavorite(id)
             } else {
-                event.target.dataset.favorited = 'true'
-                event.target.classList.add('btn-primary')
+                target.dataset.favorited = 'true'
+                target.classList.add('btn-primary')
                 addFavorite(cocktail)
             }
             return
         }
 
-        if (event.target.tagName !== 'LI') return
-        if (!event.target.dataset.id) return
+        if (target.tagName !== 'LI') return
 
-        openDetailPage(event.target.dataset.id)
+        openDetailPage(id)
     })
 }
 
@@ -122,7 +123,7 @@ function paginatedSearchResults() {
     }
 
     if (foundResults.length === 0) {
-        searchResultsElement.innerHTML = `<p class="text-zinc-400">No results found</p>`
+        searchResultsElement.innerHTML = html`<p class="text-zinc-400">No results found</p>`
     }
 
     resultsCountElement.innerHTML = `Showing ${startIdx + 1}-${endIdx} of ${foundResults.length} results`
@@ -130,26 +131,32 @@ function paginatedSearchResults() {
 
 function createPaginationPages() {
     return Array.from({ length: maxPages })
-        .map((_, i) => `<button class="pagination-button" data-page="${i}">${i + 1}</button>`)
+        .map((_, i) => html`<button class="pagination-button" data-page="${i}">${i + 1}</button>`)
         .join('')
 }
 
 function createSearchResult(cocktail) {
     let favorited = isFavorite(cocktail.id)
 
-    return `
-    <li class="flex justify-between hover:bg-zinc-700 rounded-md p-2 cursor-pointer" data-id="${cocktail.id}">
-        <div class="flex items-center gap-4 pointer-events-none">
-            <img src="${cocktail.thumbnail}" alt="${cocktail.name}" class="size-10 rounded-md pointer-events-none" />
-            <p class="text-lg pointer-events-none">${cocktail.name}</p>
-        </div>
+    return html`
+        <li class="flex justify-between hover:bg-zinc-700 rounded-md p-2 cursor-pointer" data-id="${cocktail.id}">
+            <div class="flex items-center gap-4 pointer-events-none">
+                <img
+                    src="${cocktail.thumbnail}"
+                    alt="${cocktail.name}"
+                    class="size-10 rounded-md pointer-events-none"
+                />
+                <p class="text-lg pointer-events-none">${cocktail.name}</p>
+            </div>
 
-        <button class="btn favorite-btn px-2 py-0 justify-self-end ${
-            favorited ? 'btn-primary' : ''
-        }" data-favorited="${favorited}" data-id="${cocktail.id}">
-            <span class="material-symbols-rounded text-xl pointer-events-none">star</span>
-        </button>
-    </li>
+            <button
+                class="btn favorite-btn px-2 py-0 justify-self-end ${favorited ? 'btn-primary' : ''}"
+                data-favorited="${favorited}"
+                data-id="${cocktail.id}"
+            >
+                <span class="material-symbols-rounded text-xl pointer-events-none">star</span>
+            </button>
+        </li>
     `
 }
 
