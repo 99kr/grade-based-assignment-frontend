@@ -3,9 +3,11 @@ import { addFavorite, isFavorite, mapRawCocktailData, removeFavorite } from '../
 export default async function DetailPage(cocktailId) {
     const cocktail = await getCocktailFromId(cocktailId)
     let favorited = isFavorite(cocktailId)
+
     const instructions = cocktail.instructions.split('.')
-    // remove last instruction (empty string)
-    instructions.pop()
+    if (instructions[instructions.length - 1].trim() === '') {
+        instructions.pop()
+    }
 
     const detailPage = html`
         <div class="flex gap-16">
